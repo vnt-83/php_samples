@@ -180,7 +180,7 @@
 
       <template slot="detail" slot-scope="props">
 
-		<b-table
+	<b-table
 	      :data="order_list_detailed"
 	      :bordered="true"
 	      :striped="true"
@@ -245,14 +245,14 @@ export default {
   },
   data () {
     return {
- 		openedDetailed: [],
+ 	openedDetailed: [],
     	is_filter1: false,
     	is_filter2: false,
     	is_filterSearch: '',
     	dostavka_list: [],
     	order_list: [],
     	is_dostavka_loaded: false,
-      user_id: 0,
+	user_id: 0,
     	ExpDostavkaForm,
     	ExpDostavkaFormActive: false,
     	ExpDostavkaFormProps: { id: 0, is_saveallow: 0 }
