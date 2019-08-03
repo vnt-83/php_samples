@@ -389,7 +389,7 @@ export default {
 			this.dostavka_auto_sum = 0;
 		},
 		getSettings() {
-		    this.axios.get('http://nevcab.ru/api/settings_get.php?type=calc').then((response) => {
+		    this.axios.get('http://xxx.ru/api/settings_get.php?type=calc').then((response) => {
 		        if (response.data.error == 0) {
 		        	this.settings = response.data.data
 		        	this.const_ves = [[this.settings['calc_ves_nal_sum1'], this.settings['calc_ves_nal_sum2']], [this.settings['calc_ves_beznal_sum1'], this.settings['calc_ves_beznal_sum2']]];
