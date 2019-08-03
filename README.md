@@ -1,2 +1,2 @@
-# php_samples
-PHP samples
+# Code samples
+PHP & VueJS samples
