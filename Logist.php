@@ -150,3 +150,35 @@ class Model_DB_Logist
     }
 
 
+    // Get raschet list
+    public function raschet_list_get($exp_type)
+    {
+        $result = array('id' => 0, 'error' => 0, 'error_text' => '');
+        try {
+
+            $table = '';
+            $table_pays = '';
+            if ($exp_type == 1) {
+                $table = '`exp_zabor`';
+                $table_pays = '`exp_zabor_pays`';
+            }
+            if ($exp_type == 2) {
+                $table = '`exp_dostavka`';
+                $table_pays = '`exp_dostavka_pays`';
+            }
+
+            $query = "SELECT `client_type`,`client_id`, (CASE WHEN `client_type`=2 THEN (SELECT `name` FROM `auto_owners_uric` WHERE `auto_owners_uric`.`id`=$table.`client_id`) WHEN `client_type`=1 THEN (SELECT `name` FROM `auto_owners_fisic` WHERE `auto_owners_fisic`.`id`=$table.`client_id`) ELSE '' END) AS `client_name`, SUM(`sum_prihod`) AS `prihod`, @rp:=(CASE WHEN EXISTS (SELECT `z`.`id` FROM $table `z` WHERE `z`.`client_type`=$table.`client_type` AND `z`.`client_id`=$table.`client_id` AND `z`.`status_id`>1 AND `z`.`is_deleted`=0) THEN (SELECT SUM(`c`.`sum_rashod_plan`) FROM $table `c` WHERE `c`.`client_type`=$table.`client_type` AND `c`.`client_id`=$table.`client_id` AND `c`.`status_id`>1 AND `c`.`is_deleted`=0) ELSE 0 END) AS `rashod_plan`, @rf:=(CASE WHEN EXISTS (SELECT `z`.`id` FROM $table `z` WHERE `z`.`client_type`=$table.`client_type` AND `z`.`client_id`=$table.`client_id` AND `z`.`status_id`>1 AND `z`.`is_deleted`=0) THEN (SELECT SUM(`c`.`sum_rashod_fact`) FROM $table `c` WHERE `c`.`client_type`=$table.`client_type` AND `c`.`client_id`=$table.`client_id` AND `c`.`status_id`>1 AND `c`.`is_deleted`=0) ELSE 0 END) AS `rashod_fact`, (@rp - @rf) AS `sum_exp`, @sp:=(CASE WHEN EXISTS (SELECT `z`.`id` FROM $table_pays `z` WHERE `z`.`client_type`=$table.`client_type` AND `z`.`client_id`=$table.`client_id`) THEN (SELECT SUM(`sum`) FROM $table_pays WHERE $table_pays.`client_type`=$table.`client_type` AND $table_pays.`client_id`=$table.`client_id`) ELSE 0 END) AS `sum_pays`, (@rf - @sp) AS `ostatok` FROM $table WHERE `status_id`>1 AND `is_deleted`=0 GROUP BY `client_type`, `client_id`;";
+
+            $streets = $this->db->query($query);
+            $result = $streets->fetch_assoc_array();
+            if (!isset($result)) {$result = false;}
+        } catch (Exception $e) {
+            // $result = false;
+            $result['error'] = 1;
+            $result['error_text'] = $e->getMessage();
+            // $result['error_text'] = $query;
+        }
+        return $result;
+    }
+
+
